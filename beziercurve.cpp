@@ -28,6 +28,20 @@ void BezierCurve::drawDots(QPainter& painter, QColor color)
     }
 }
 
+void BezierCurve::drawLines(QPainter& painter, QColor color, QVector<QPointF>& points)
+{
+    if(points.size()<2) return;
+
+    painter.setPen(QPen(color));
+    painter.setBrush(QBrush(color));
+
+    for(int i = 0; i<points.size() - 1; i++)
+    {
+        QLineF line(points[i], points[i+1]);
+        painter.drawLine(line);
+    }
+}
+
 void BezierCurve::drawLines(QPainter& painter, QColor color)
 {
     if(points.size()<2) return;
@@ -43,11 +57,11 @@ void BezierCurve::drawLines(QPainter& painter, QColor color)
 }
 
 
-void BezierCurve::drawBezierDot(QPainter& painter, QVector<QPointF> copiedPoints, qreal step)
+void BezierCurve::drawBezierDot(QVector<QPointF>& savedPoints, QVector<QPointF> copiedPoints, qreal step)
 {
     if (copiedPoints.size() == 1)
     {
-       painter.drawEllipse(copiedPoints[0], 1, 1);
+       savedPoints.push_back(copiedPoints[0]);
        return;
     }
 
@@ -57,20 +71,21 @@ void BezierCurve::drawBezierDot(QPainter& painter, QVector<QPointF> copiedPoints
     }
 
     copiedPoints.pop_back();
-    drawBezierDot(painter, std::move(copiedPoints), step);
+    drawBezierDot(savedPoints, std::move(copiedPoints), step);
 }
 
 void BezierCurve::drawBezierCurve(QPainter& painter, QColor color, qreal step)
 {
     if(points.size()<3) return;
 
-    painter.setPen(QPen(color));
-    painter.setBrush(QBrush(color));
+    QVector<QPointF> savedPoints;
 
     for (qreal i = 0; i <= 1.0; i += step)
     {
-        drawBezierDot(painter, points, i);
+        drawBezierDot(savedPoints, points, i);
     }
+
+    drawLines(painter, color, savedPoints);
 }
 
 QPointF BezierCurve::moveFromTo(QPointF p1, QPointF p2, qreal step)

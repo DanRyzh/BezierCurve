@@ -14,6 +14,7 @@ public:
     BezierCurve();
     ~BezierCurve();
     void drawLines(QPainter&, QColor);
+    void drawLines(QPainter&, QColor, QVector<QPointF>&);
     void drawDots(QPainter&, QColor);
     void drawBezierCurve(QPainter&, QColor, qreal);
     void add(const QPointF&);
@@ -21,7 +22,7 @@ public:
 
     bool empty();
 private:
-    void drawBezierDot(QPainter&, QVector<QPointF>, qreal);
+    void drawBezierDot(QVector<QPointF>&, QVector<QPointF>, qreal);
     QPointF moveFromTo(QPointF, QPointF, qreal);
     qreal moveFromTo(qreal, qreal, qreal);
 };
