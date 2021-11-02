@@ -22,7 +22,7 @@ public:
 
     bool empty();
 private:
-    void drawBezierDot(QVector<QPointF>&, QVector<QPointF>, qreal);
+    void calcBezierDot(QVector<QPointF>&, QVector<QPointF>, qreal);
     QPointF moveFromTo(QPointF, QPointF, qreal);
     qreal moveFromTo(qreal, qreal, qreal);
 };
