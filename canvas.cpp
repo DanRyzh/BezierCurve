@@ -12,19 +12,21 @@ Canvas::Canvas(QWidget* parent) : QWidget(parent)
 void Canvas::showInfo(QPainter& painter)
 {
 
-    QString message = "Информация";
-    QFont font("Arial", 20, QFont::DemiBold);
-    QFontMetrics metrics(font);
-    int textWidth = metrics.width(message);
+    QString info[3] = {"Кривые Безье", "ЛКМ - новая точка", "ПКМ - удалить последнюю точку"};
+
+    int textSize = 15;
+    int textOffset = textSize + 15;
+    QFont font("Arial", textSize, QFont::DemiBold);
 
     painter.setPen(QColor(Qt::white));
     painter.setFont(font);
 
-    int h = height();
-    int w = width();
+    painter.translate(QPoint(height()/2, height()/2 - (2*textOffset)));
 
-    painter.translate(QPoint(w/2, h/2));
-    painter.drawText(-textWidth/2, 0, message);
+    for(int i = 0; i < 3; i++)
+    {
+        painter.drawText(0, i*textOffset, info[i]);
+    }
 }
 
 void Canvas::closeEvent(QCloseEvent* event)
