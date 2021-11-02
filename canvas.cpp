@@ -10,22 +10,23 @@ Canvas::Canvas(QWidget* parent) : QWidget(parent)
 }
 
 void Canvas::showInfo(QPainter& painter)
-{
-
+{    
     QString info[3] = {"Кривые Безье", "ЛКМ - новая точка", "ПКМ - удалить последнюю точку"};
 
-    int textSize = 15;
+    int textSize = 20;
     int textOffset = textSize + 15;
     QFont font("Arial", textSize, QFont::DemiBold);
+    QFontMetrics metrics(font);
 
     painter.setPen(QColor(Qt::white));
     painter.setFont(font);
 
-    painter.translate(QPoint(height()/2, height()/2 - (2*textOffset)));
+    painter.translate(QPoint(width()/2, height()/2 - (2*textOffset)));
 
     for(int i = 0; i < 3; i++)
     {
-        painter.drawText(0, i*textOffset, info[i]);
+        int textWidth = metrics.width(info[i]);
+        painter.drawText(-textWidth/2, i*textOffset, info[i]);
     }
 }
 
