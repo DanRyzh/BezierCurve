@@ -9,6 +9,7 @@
 class BezierCurve
 {
     QVector<QPointF> points;
+    int expectToEdit = -1;
 
 public:
     BezierCurve();
@@ -18,9 +19,19 @@ public:
     void drawDots(QPainter&, QColor);
     void drawBezierCurve(QPainter&, QColor, qreal);
     void add(const QPointF&);
+
+    int checkPointClick(const QPointF&);
+
     void deleteLast();
+    void deletePoint(int);
+
+    void editPoint(const QPointF&);
 
     bool empty();
+    bool editPointIsEmpty();
+
+    void setOnEditPoint(int);
+
 private:
     void calcBezierDot(QVector<QPointF>&, QVector<QPointF>, qreal);
     QPointF moveFromTo(QPointF, QPointF, qreal);

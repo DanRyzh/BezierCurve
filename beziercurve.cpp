@@ -14,6 +14,37 @@ void BezierCurve::deleteLast()
     if(!points.isEmpty()) points.pop_back();
 }
 
+void BezierCurve::deletePoint(int pointPtr)
+{
+    for(int i = pointPtr; i<points.size() - 1; i++)
+    {
+        points[i].setX(points[i+1].x());
+        points[i].setY(points[i+1].y());
+    }
+
+    points.pop_back();
+}
+
+void BezierCurve::editPoint(const QPointF& point)
+{
+
+    points[expectToEdit] = point;
+}
+
+int BezierCurve::checkPointClick(const QPointF& point)
+{
+    for(int i = 0; i<points.size(); i++)
+    {
+        if(point.x()+6 > points[i].x() && point.x()-6 < points[i].x()
+                && point.y()+6 > points[i].y() && point.y()-6 < points[i].y())
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 void BezierCurve::drawDots(QPainter& painter, QColor color)
 {
     painter.setPen(QPen(color));
@@ -21,7 +52,7 @@ void BezierCurve::drawDots(QPainter& painter, QColor color)
 
     for(int i = 0; i<points.size(); i++)
     {
-        painter.drawEllipse(points[i], 2, 2);
+        painter.drawEllipse(points[i], 3, 3);
         painter.drawText(points[i].x(), points[i].y() - 5, "P" + QString::number(i+1));
     }
 }
@@ -103,6 +134,16 @@ qreal BezierCurve::moveFromTo(qreal p1, qreal p2, qreal step)
 bool BezierCurve::empty()
 {
     return points.isEmpty();
+}
+
+void BezierCurve::setOnEditPoint(int numb)
+{
+    expectToEdit = numb;
+}
+
+bool BezierCurve::editPointIsEmpty()
+{
+    return expectToEdit==-1;
 }
 
 BezierCurve::~BezierCurve(){}

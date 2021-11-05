@@ -21,6 +21,8 @@ protected:
    void paintEvent(QPaintEvent*);
     void closeEvent(QCloseEvent*);
     void mousePressEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
 signals:
     void closing();
 };

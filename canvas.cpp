@@ -1,5 +1,7 @@
 #include "canvas.h"
 
+#include <QDebug>
+
 Canvas::Canvas(QWidget* parent) : QWidget(parent)
 {
     setWindowTitle("Кривые Безье");
@@ -56,9 +58,45 @@ void Canvas::paintEvent(QPaintEvent*)
 
 void Canvas::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton)  curve->add(event->pos());
-    if (event->button() == Qt::RightButton) curve->deleteLast();
+    if (event->button() == Qt::LeftButton)
+    {
+        auto pointPtr = curve->checkPointClick(event->pos());
+        if(pointPtr == -1)
+            curve->add(event->pos());
+        else
+        {
+            this->setCursor(QCursor(Qt::ClosedHandCursor));
+            curve->setOnEditPoint(pointPtr);
+        }
+
+    }
+    if (event->button() == Qt::RightButton)
+    {
+        auto pointPtr = curve->checkPointClick(event->pos());
+        if(pointPtr == -1)
+            curve->deleteLast();
+        else
+            curve->deletePoint(pointPtr);
+    }
     update();
+}
+
+void Canvas::mouseMoveEvent(QMouseEvent* event)
+{
+    if(!curve->editPointIsEmpty())
+    {
+        this->setCursor(QCursor(Qt::ClosedHandCursor));
+        curve->editPoint(event->pos());
+        update();
+    }
+}
+
+void Canvas::mouseReleaseEvent(QMouseEvent* event)
+{
+    Q_UNUSED(event)
+
+    this->setCursor(QCursor(Qt::ArrowCursor));
+    curve->setOnEditPoint(-1);
 }
 
 Canvas::~Canvas()
