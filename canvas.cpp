@@ -61,7 +61,7 @@ void Canvas::mousePressEvent(QMouseEvent* event)
     if (event->button() == Qt::LeftButton)
     {
         auto pointPtr = curve->checkPointClick(event->pos());
-        if(pointPtr == -1)
+        if(pointPtr == curve -> end())
             curve->add(event->pos());
         else
         {
@@ -73,7 +73,7 @@ void Canvas::mousePressEvent(QMouseEvent* event)
     if (event->button() == Qt::RightButton)
     {
         auto pointPtr = curve->checkPointClick(event->pos());
-        if(pointPtr == -1)
+        if(pointPtr == curve -> end())
             curve->deleteLast();
         else
             curve->deletePoint(pointPtr);
@@ -96,7 +96,7 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
     Q_UNUSED(event)
 
     this->setCursor(QCursor(Qt::ArrowCursor));
-    curve->setOnEditPoint(-1);
+    curve->setOnEditPoint(curve -> end());
 }
 
 Canvas::~Canvas()

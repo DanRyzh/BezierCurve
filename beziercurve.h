@@ -4,12 +4,13 @@
 #include <QPointF>
 #include <QPainter>
 #include <QVector>
+#include <algorithm>
 
 
 class BezierCurve
 {
     QVector<QPointF> points;
-    int expectToEdit = -1;
+    QVector<QPointF>::iterator toEditPoint;
 
 public:
     BezierCurve();
@@ -20,17 +21,19 @@ public:
     void drawBezierCurve(QPainter&, QColor, qreal);
     void add(const QPointF&);
 
-    int checkPointClick(const QPointF&);
+    QVector<QPointF>::iterator checkPointClick(const QPointF&);
 
     void deleteLast();
-    void deletePoint(int);
+    void deletePoint(QVector<QPointF>::iterator&);
 
     void editPoint(const QPointF&);
 
     bool empty();
     bool editPointIsEmpty();
 
-    void setOnEditPoint(int);
+    void setOnEditPoint(const QVector<QPointF>::iterator&);
+
+    QVector<QPointF>::iterator end();
 
 private:
     void calcBezierDot(QVector<QPointF>&, QVector<QPointF>, qreal);

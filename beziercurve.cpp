@@ -14,35 +14,31 @@ void BezierCurve::deleteLast()
     if(!points.isEmpty()) points.pop_back();
 }
 
-void BezierCurve::deletePoint(int pointPtr)
+void BezierCurve::deletePoint(QVector<QPointF>::iterator& pIt)
 {
-    for(int i = pointPtr; i<points.size() - 1; i++)
-    {
-        points[i].setX(points[i+1].x());
-        points[i].setY(points[i+1].y());
-    }
-
+    for(;pIt!= points.end() - 1; pIt++) std::iter_swap(pIt, pIt+1);
     points.pop_back();
 }
 
 void BezierCurve::editPoint(const QPointF& point)
 {
 
-    points[expectToEdit] = point;
+    *toEditPoint = point;
 }
 
-int BezierCurve::checkPointClick(const QPointF& point)
+QVector<QPointF>::iterator BezierCurve::checkPointClick(const QPointF& point)
 {
-    for(int i = 0; i<points.size(); i++)
+    auto p = points.begin();
+
+    for(;p!=points.end(); p++)
     {
-        if(point.x()+6 > points[i].x() && point.x()-6 < points[i].x()
-                && point.y()+6 > points[i].y() && point.y()-6 < points[i].y())
-        {
-            return i;
-        }
+        if(point.x()+6 > p->x() && point.x()-6 < p->x()
+                && point.y()+6 > p->y() && point.y()-6 < p->y())
+            break;
+
     }
 
-    return -1;
+    return p;
 }
 
 void BezierCurve::drawDots(QPainter& painter, QColor color)
@@ -136,14 +132,19 @@ bool BezierCurve::empty()
     return points.isEmpty();
 }
 
-void BezierCurve::setOnEditPoint(int numb)
+void BezierCurve::setOnEditPoint(const QVector<QPointF>::iterator& pIt)
 {
-    expectToEdit = numb;
+    toEditPoint = pIt;
+}
+
+QVector<QPointF>::iterator BezierCurve::end()
+{
+    return points.end();
 }
 
 bool BezierCurve::editPointIsEmpty()
 {
-    return expectToEdit==-1;
+    return toEditPoint == points.end();
 }
 
 BezierCurve::~BezierCurve(){}
