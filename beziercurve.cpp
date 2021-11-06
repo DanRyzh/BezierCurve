@@ -2,7 +2,10 @@
 
 #include <QDebug>
 
-BezierCurve::BezierCurve(){}
+BezierCurve::BezierCurve()
+{
+    toEditPoint = end();
+}
 
 void BezierCurve::add(const QPointF& point)
 {
@@ -14,6 +17,7 @@ void BezierCurve::deleteLast()
     if(!points.isEmpty()) points.pop_back();
 }
 
+//Moving given point to the end, then deleting it
 void BezierCurve::deletePoint(QVector<QPointF>::iterator& pIt)
 {
     for(;pIt!= points.end() - 1; pIt++) std::iter_swap(pIt, pIt+1);
@@ -22,17 +26,51 @@ void BezierCurve::deletePoint(QVector<QPointF>::iterator& pIt)
 
 void BezierCurve::editPoint(const QPointF& point)
 {
-
     *toEditPoint = point;
 }
 
-QVector<QPointF>::iterator BezierCurve::checkPointClick(const QPointF& point)
+/*Calculating if given point lies between p1 and p1+1 (lies on line(p1, p1+1))
+  todo:
+  change the implementation of calc,
+  some bugs occuring*/
+bool BezierCurve::checkClickToLine(const QPointF& point, QVector<QPointF>::iterator p1)
+{
+    QVector<QPointF>::iterator p2 = p1 + 1;
+    qreal expr1 = (point.x() - p1->x())/(p2->x() - p1->x());
+    qreal expr2 = (point.y() - p1->y())/(p2->y() - p1->y());
+    return (abs(expr1 - expr2) <= 0.05);
+}
+
+//Checking if point lies on some curves's line (at least 1 line required)
+//if point lies, includes point and returns its iterator
+/*todo:
+  change the implementation, some disaster with iterators*/
+QVector<QPointF>::iterator BezierCurve::checkClickToLines(const QPointF& point)
+{
+    if(points.size()<2) return end();
+
+    for(auto pIt = points.begin(); pIt!=points.end() - 1; pIt++)
+    {
+        if(checkClickToLine(point, pIt))
+        {
+            points.insert(++pIt, point);
+            return pIt;
+        }
+    }
+
+    return end();
+}
+
+/*Checking if point lies on some point in curve (at least 1 line required)
+  if point matches returns its iterator
+  +-6 means the ability to get to the point by clicking*/
+QVector<QPointF>::iterator BezierCurve::checkClickToPoints(const QPointF& point)
 {
     auto p = points.begin();
 
     for(;p!=points.end(); p++)
     {
-        if(point.x()+6 > p->x() && point.x()-6 < p->x()
+        if(point.x() + 6 > p->x() && point.x()-6 < p->x()
                 && point.y()+6 > p->y() && point.y()-6 < p->y())
             break;
 
@@ -67,6 +105,7 @@ void BezierCurve::drawLines(QPainter& painter, QColor color, QVector<QPointF>& p
     }
 }
 
+//drawLines overload for accessing from canvas obj
 void BezierCurve::drawLines(QPainter& painter, QColor color)
 {
     if(points.size()<2) return;
@@ -81,8 +120,8 @@ void BezierCurve::drawLines(QPainter& painter, QColor color)
     }
 }
 
-
-void BezierCurve::calcBezierDot(QVector<QPointF>& savedPoints, QVector<QPointF> copiedPoints, qreal step)
+//Calculating supporting curve's dot with given step, saving it in array
+void BezierCurve::calcBezierDots(QVector<QPointF>& savedPoints, QVector<QPointF> copiedPoints, qreal step)
 {
     if (copiedPoints.size() == 1)
     {
@@ -96,7 +135,7 @@ void BezierCurve::calcBezierDot(QVector<QPointF>& savedPoints, QVector<QPointF> 
     }
 
     copiedPoints.pop_back();
-    calcBezierDot(savedPoints, std::move(copiedPoints), step);
+    calcBezierDots(savedPoints, std::move(copiedPoints), step);
 }
 
 void BezierCurve::drawBezierCurve(QPainter& painter, QColor color, qreal step)
@@ -107,18 +146,19 @@ void BezierCurve::drawBezierCurve(QPainter& painter, QColor color, qreal step)
 
     for (qreal i = 0; i <= 1.0; i += step)
     {
-        calcBezierDot(savedPoints, points, i);
+        calcBezierDots(savedPoints, points, i);
     }
 
     drawLines(painter, color, savedPoints);
 }
 
+//Calculating line's point with step
 QPointF BezierCurve::moveFromTo(QPointF p1, QPointF p2, qreal step)
 {
     return {moveFromTo(p1.x(), p2.x(), step), moveFromTo(p1.y(), p2.y(), step)};
 }
 
-
+//moveFromTo overload for coordinates separately
 qreal BezierCurve::moveFromTo(qreal p1, qreal p2, qreal step)
 {
     if(p1<p2)

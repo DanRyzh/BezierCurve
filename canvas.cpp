@@ -4,16 +4,17 @@
 
 Canvas::Canvas(QWidget* parent) : QWidget(parent)
 {
-    setWindowTitle("Кривые Безье");
+    setWindowTitle("Bezier curves");
     setStyleSheet("background-color: black");
     setFixedSize(1200, 600);
 
     curve = new BezierCurve;
 }
 
+//Displaying user info
 void Canvas::showInfo(QPainter& painter)
 {    
-    QString info[3] = {"Кривые Безье", "ЛКМ - новая точка", "ПКМ - удалить последнюю точку"};
+    QString info[3] = {"Bezier curves", "LMB - new point/edit point by dragging", "RMB - delete selected/last point"};
 
     int textSize = 20;
     int textOffset = textSize + 15;
@@ -38,8 +39,11 @@ void Canvas::closeEvent(QCloseEvent* event)
     event->accept();
 }
 
-void Canvas::paintEvent(QPaintEvent*)
+/*Drawing points/dots/curve if it exist
+  else displaying user info*/
+void Canvas::paintEvent(QPaintEvent* event)
 {
+    Q_UNUSED(event)
 
     QPainter painter;
     painter.begin(this);
@@ -56,31 +60,41 @@ void Canvas::paintEvent(QPaintEvent*)
     painter.end();
 }
 
+/*Checking if some points/lines were edited
+  else adding new point*/
 void Canvas::mousePressEvent(QMouseEvent* event)
 {
+    auto pointIt = curve->checkClickToPoints(event->pos());
+
     if (event->button() == Qt::LeftButton)
     {
-        auto pointPtr = curve->checkPointClick(event->pos());
-        if(pointPtr == curve -> end())
-            curve->add(event->pos());
-        else
+        if(pointIt == curve -> end())
         {
-            this->setCursor(QCursor(Qt::ClosedHandCursor));
-            curve->setOnEditPoint(pointPtr);
+            pointIt = curve->checkClickToLines(event->pos());
+            if(pointIt == curve -> end())
+            {
+                curve->add(event->pos());
+            }
         }
 
+        if(pointIt != curve -> end())
+        {
+            this->setCursor(QCursor(Qt::ClosedHandCursor));
+            curve->setOnEditPoint(pointIt);
+        }
     }
+
     if (event->button() == Qt::RightButton)
     {
-        auto pointPtr = curve->checkPointClick(event->pos());
-        if(pointPtr == curve -> end())
+        if(pointIt == curve -> end())
             curve->deleteLast();
         else
-            curve->deletePoint(pointPtr);
+            curve->deletePoint(pointIt);
     }
     update();
 }
 
+//Changing point if it was dragged
 void Canvas::mouseMoveEvent(QMouseEvent* event)
 {
     if(!curve->editPointIsEmpty())
@@ -91,6 +105,7 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     }
 }
 
+//Releasing dragged point, changing cursor
 void Canvas::mouseReleaseEvent(QMouseEvent* event)
 {
     Q_UNUSED(event)
