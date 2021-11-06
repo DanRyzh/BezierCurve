@@ -105,19 +105,10 @@ void BezierCurve::drawLines(QPainter& painter, QColor color, QVector<QPointF>& p
     }
 }
 
-//drawLines overload for accessing from canvas obj
+//drawLines overload for accessing from canvas
 void BezierCurve::drawLines(QPainter& painter, QColor color)
 {
-    if(points.size()<2) return;
-
-    painter.setPen(QPen(color));
-    painter.setBrush(QBrush(color));
-
-    for(int i = 0; i<points.size() - 1; i++)
-    {
-        QLineF line(points[i], points[i+1]);
-        painter.drawLine(line);
-    }
+    drawLines(painter, color, points);
 }
 
 //Calculating supporting curve's dot with given step, saving it in array
