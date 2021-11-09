@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QCloseEvent>
 #include <QMouseEvent>
+#include <QKeyEvent>
+#include <QPainter>
+#include "animator.h"
 #include "beziercurve.h"
 
 class Canvas : public QWidget
@@ -11,6 +14,7 @@ class Canvas : public QWidget
     Q_OBJECT
 
     BezierCurve* curve;
+    Animator* animator;
 
 public:
     Canvas(QWidget* parent = 0);
@@ -18,11 +22,12 @@ public:
 private:
     void showInfo(QPainter&);
 protected:
-   void paintEvent(QPaintEvent*);
+    void paintEvent(QPaintEvent*);
     void closeEvent(QCloseEvent*);
     void mousePressEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
+    void keyPressEvent(QKeyEvent *);
 signals:
     void closing();
 };

@@ -9,15 +9,24 @@ Canvas::Canvas(QWidget* parent) : QWidget(parent)
     setFixedSize(1200, 600);
 
     curve = new BezierCurve;
+    animator = new Animator();
+
+    connect(animator, SIGNAL(nextFrame()), this, SLOT(update()));
 }
 
 //Displaying user info
 void Canvas::showInfo(QPainter& painter)
 {    
-    QString info[3] = {"Bezier curves", "LMB - new point/edit point by dragging", "RMB - delete selected/last point"};
+    QString info[4] = {
+        "Bezier curves",
+        "LMB - new point/edit point by dragging",
+        "RMB - delete selected/last point",
+        "Key A - algorithm animation/pause"
+    };
 
     int textSize = 20;
     int textOffset = textSize + 15;
+
     QFont font("Arial", textSize, QFont::DemiBold);
     QFontMetrics metrics(font);
 
@@ -26,7 +35,7 @@ void Canvas::showInfo(QPainter& painter)
 
     painter.translate(QPoint(width()/2, height()/2 - (2*textOffset)));
 
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 4; i++)
     {
         int textWidth = metrics.width(info[i]);
         painter.drawText(-textWidth/2, i*textOffset, info[i]);
@@ -55,8 +64,13 @@ void Canvas::paintEvent(QPaintEvent* event)
         curve->drawLines(painter, Qt::white);
         curve->drawDots(painter, Qt::red);
         curve->drawBezierCurve(painter, Qt::blue, 0.0025);
-    }
 
+        if(animator->isActive())
+        {
+            curve->drawSupportLines(painter, animator->getCurrentStep());
+            curve->drawStep(painter, animator->getCurrentStep(), QPoint(width()/2, height()));
+        }
+    }
     painter.end();
 }
 
@@ -74,6 +88,7 @@ void Canvas::mousePressEvent(QMouseEvent* event)
             if(pointIt == curve -> end())
             {
                 curve->add(event->pos());
+                pointIt = curve->end() - 1;
             }
         }
 
@@ -113,8 +128,27 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
     this->setCursor(QCursor(Qt::ArrowCursor));
     curve->setOnEditPoint(curve -> end());
 }
+void Canvas::keyPressEvent(QKeyEvent *event) {
+
+    if (event->key() == Qt::Key_A)
+    {
+        if(!animator->isActive())
+        {
+            animator->start();
+        }
+        else
+        {
+            if(animator->isPaused()) animator->continueAnim();
+            else animator->pause();
+        }
+    }
+}
 
 Canvas::~Canvas()
 {
+    if(animator->isActive())
+        animator->stop();
+    disconnect(animator, SIGNAL(nextFrame()), this, SLOT(update()));
+    delete animator;
     delete curve;
 }
