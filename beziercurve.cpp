@@ -26,13 +26,9 @@ void BezierCurve::deleteLast()
     if(!points.isEmpty()) points.pop_back();
 }
 
-/*Moving given point to the end, then deleting it
-  todo:
-  use STL func*/
 void BezierCurve::deletePoint(QVector<QPointF>::iterator& pIt)
 {
-    for(;pIt!= points.end() - 1; pIt++) std::iter_swap(pIt, pIt+1);
-    points.pop_back();
+    points.erase(pIt);
 }
 
 void BezierCurve::editPoint(const QPointF& point)
