@@ -1,7 +1,5 @@
 #include "beziercurve.h"
 
-#include <QDebug>
-
 //defined using RGB
 static QColor colors[7] = {
     {148, 0, 211}, //Violet
@@ -43,33 +41,32 @@ void BezierCurve::editPoint(const QPointF& point)
 }
 
 /*Calculating if given point lies between p1 and p1+1 (lies on line(p1, p1+1))
-  todo:
-  change the implementation of calc,
-  some bugs occuring*/
-bool BezierCurve::checkClickToLine(const QPointF& point, const QVector<QPointF>::iterator &p1)
+  with 4 px allowance*/
+bool BezierCurve::checkClickToLine(const QPointF& point, QVector<QPointF>::iterator &p1)
 {
     QVector<QPointF>::iterator p2 = p1 + 1;
-    qreal expr1 = (point.x() - p1->x())/(p2->x() - p1->x());
-    qreal expr2 = (point.y() - p1->y())/(p2->y() - p1->y());
-    return (abs(expr1 - expr2) <= 0.05);
+
+    int pxAllowance = 4;
+
+    QPointF A(p1->x() + pxAllowance, p1->y() + pxAllowance);
+    QPointF B(p1->x() - pxAllowance, p1->y() - pxAllowance);
+    QPointF C(p2->x() - pxAllowance, p2->y() - pxAllowance);
+    QPointF D(p2->x() + pxAllowance, p2->y() + pxAllowance);
+
+    QPolygonF polygon({A, B, C, D});
+
+    return polygon.containsPoint(point, Qt::OddEvenFill);
 }
 
 //Checking if point lies on some curves's line (at least 1 line required)
 //if point lies, includes point and returns its iterator
-/*todo:
-  change the implementation, some disaster with iterators*/
 QVector<QPointF>::iterator BezierCurve::checkClickToLines(const QPointF& point)
 {
     if(points.size()<2) return end();
 
     for(auto pIt = points.begin(); pIt!=points.end() - 1; pIt++)
-    {
         if(checkClickToLine(point, pIt))
-        {
-            points.insert(++pIt, point);
-            return pIt;
-        }
-    }
+           return points.insert(++pIt, point);
 
     return end();
 }
@@ -82,12 +79,10 @@ QVector<QPointF>::iterator BezierCurve::checkClickToPoints(const QPointF& point)
     auto p = points.begin();
 
     for(;p!=points.end(); p++)
-    {
         if(point.x() + 6 > p->x() && point.x()-6 < p->x()
                 && point.y()+6 > p->y() && point.y()-6 < p->y())
             break;
 
-    }
     return p;
 }
 

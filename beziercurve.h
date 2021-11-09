@@ -45,7 +45,7 @@ private:
 
     void drawLines(QPainter&, QColor, const QVector<QPointF>&);
 
-    bool checkClickToLine(const QPointF&, const QVector<QPointF>::iterator&);
+    bool checkClickToLine(const QPointF&, QVector<QPointF>::iterator&);
 
     void drawSupportLines(QVector<QPointF>&, QPainter&, QVector<QPointF>, qreal);
 
