@@ -1,7 +1,5 @@
 #include "animator.h"
 
-#include <QDebug>
-
 Animator::Animator(int ms, qreal _step): step(_step)
 {
     frameGenerator = new QTimer;
@@ -12,6 +10,7 @@ Animator::Animator(int ms, qreal _step): step(_step)
     connect(frameGenerator,SIGNAL(timeout()),this, SLOT(drawFrame()));
 
     active = 0;
+    paused = 0;
 };
 
 qreal Animator::getCurrentStep()
@@ -23,12 +22,6 @@ void Animator::pause()
 {
     paused = 1;
     frameGenerator->stop();
-}
-
-void Animator::continueAnim()
-{
-    paused = 0;
-    frameGenerator->start();
 }
 
 void Animator::stop()
@@ -58,8 +51,10 @@ bool Animator::isPaused()
 
 void Animator::start()
 {
-    active = 1;
-    paused = 0;
+    if(!active)
+        active = 1;
+    if(paused)
+        paused = 0;
     frameGenerator->start();
 }
 

@@ -132,15 +132,9 @@ void Canvas::keyPressEvent(QKeyEvent *event) {
 
     if (event->key() == Qt::Key_A)
     {
-        if(!animator->isActive())
-        {
+        if(!animator->isActive() || animator->isPaused())
             animator->start();
-        }
-        else
-        {
-            if(animator->isPaused()) animator->continueAnim();
-            else animator->pause();
-        }
+        else animator->pause();
     }
 }
 

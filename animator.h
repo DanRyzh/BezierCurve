@@ -2,7 +2,6 @@
 #define ANIMATOR_H
 
 #include <QWidget>
-#include <QPainter>
 #include <QTimer>
 #include "beziercurve.h"
 
@@ -12,7 +11,6 @@ class Animator : public QWidget
 
     qreal step = 0;
     qreal currentStep = 0;
-    QPainter* painter;
     QTimer* frameGenerator;
     bool active;
     bool paused;
@@ -26,7 +24,6 @@ public:
     void start();
     void stop();
     void pause();
-    void continueAnim();
     qreal getCurrentStep();
 
 protected slots:
