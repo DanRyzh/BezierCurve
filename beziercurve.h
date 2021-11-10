@@ -7,7 +7,7 @@
 #include <algorithm>
 
 /*todo:
-  divide the drawing
+  split the drawing
   and calculating logic*/
 class BezierCurve
 {
@@ -45,9 +45,9 @@ private:
 
     void drawLines(QPainter&, QColor, const QVector<QPointF>&);
 
-    bool checkClickToLine(const QPointF&, QVector<QPointF>::iterator&);
+    bool checkClickToLine(const QPointF&, const QVector<QPointF>::iterator&);
 
-    void drawSupportLines(QVector<QPointF>&, QPainter&, QVector<QPointF>, qreal);
+    void drawSupportLines(QPainter&, QVector<QPointF>, qreal);
 
     QPointF moveFromTo(const QPointF&, const QPointF&, qreal);
     qreal moveFromTo(qreal, qreal, qreal);

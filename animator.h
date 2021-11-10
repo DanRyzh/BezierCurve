@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QTimer>
-#include "beziercurve.h"
 
 class Animator : public QWidget
 {

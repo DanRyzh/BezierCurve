@@ -1,7 +1,5 @@
 #include "canvas.h"
 
-#include <QDebug>
-
 Canvas::Canvas(QWidget* parent) : QWidget(parent)
 {
     setWindowTitle("Bezier curves");

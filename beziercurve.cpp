@@ -38,7 +38,7 @@ void BezierCurve::editPoint(const QPointF& point)
 
 /*Calculating if given point lies between p1 and p1+1 (lies on line(p1, p1+1))
   with 4 px allowance*/
-bool BezierCurve::checkClickToLine(const QPointF& point, QVector<QPointF>::iterator &p1)
+bool BezierCurve::checkClickToLine(const QPointF& point, const QVector<QPointF>::iterator &p1)
 {
     QVector<QPointF>::iterator p2 = p1 + 1;
 
@@ -136,36 +136,36 @@ void BezierCurve::drawLines(QPainter& painter, QColor color)
 }
 
 //Calculating supporting curve's dot with given step, saving it in array
-void BezierCurve::calcBezierDot(QVector<QPointF>& savedPoints, QVector<QPointF> copiedPoints, qreal step)
+void BezierCurve::calcBezierDot(QVector<QPointF>& bezierCurve, QVector<QPointF> curve, qreal step)
 {
-    if (copiedPoints.size() == 1)
+    if (curve.size() == 1)
     {
-       savedPoints.push_back(copiedPoints[0]);
+       bezierCurve.push_back(curve[0]);
        return;
     }
 
-    for (int i = 0; i < copiedPoints.size() - 1; i++)
+    for (int i = 0; i < curve.size() - 1; i++)
     {
-        copiedPoints[i] = moveFromTo(copiedPoints[i], copiedPoints[i + 1], step);
+        curve[i] = moveFromTo(curve[i], curve[i + 1], step);
     }
 
-    copiedPoints.pop_back();
-    calcBezierDot(savedPoints, std::move(copiedPoints), step);
+    curve.pop_back();
+    calcBezierDot(bezierCurve, std::move(curve), step);
 }
 
 void BezierCurve::drawBezierCurve(QPainter& painter, QColor color, qreal step)
 {
     if(points.size()<3) return;
 
-    QVector<QPointF> savedPoints;
-    savedPoints.reserve(static_cast<int>(1/step + 1));
+    QVector<QPointF> curveCopied;
+    curveCopied.reserve(static_cast<int>(1/step + 1));
 
     for (qreal i = 0; i <= 1.0; i += step)
     {
-        calcBezierDot(savedPoints, points, i);
+        calcBezierDot(curveCopied, points, i);
     }
 
-    drawLines(painter, color, savedPoints);
+    drawLines(painter, color, curveCopied);
 }
 
 //Calculating line's point with step
@@ -203,33 +203,29 @@ bool BezierCurve::editPointIsEmpty()
     return toEditPoint == points.end();
 }
 
-void BezierCurve::drawSupportLines(QVector<QPointF>& savedPoints, QPainter& painter, QVector<QPointF> copiedPoints, qreal step)
+void BezierCurve::drawSupportLines(QPainter& painter, QVector<QPointF> curve, qreal step)
 {
-    if (copiedPoints.size() == 1)
+    if (curve.size() == 1)
     {
-       savedPoints.push_back(copiedPoints[0]);
-       painter.drawEllipse(copiedPoints[0], 5, 5);
+       painter.drawEllipse(curve[0], 5, 5);
        return;
     }
 
-    for (int i = 0; i < copiedPoints.size() - 1; i++)
+    for (int i = 0; i < curve.size() - 1; i++)
     {
-        copiedPoints[i] = moveFromTo(copiedPoints[i], copiedPoints[i + 1], step);
+        curve[i] = moveFromTo(curve[i], curve[i + 1], step);
     }
 
-    copiedPoints.pop_back();
-    drawLines(painter, colors[copiedPoints.size()%7], copiedPoints);
-    drawSupportLines(savedPoints, painter, std::move(copiedPoints), step);
+    curve.pop_back();
+    drawLines(painter, colors[curve.size()%7], curve);
+    drawSupportLines(painter, std::move(curve), step);
 }
 
 void BezierCurve::drawSupportLines(QPainter& painter,qreal step)
 {
     if(points.size() < 3) return;
 
-    QVector<QPointF> savedPoints;
-
-    drawSupportLines(savedPoints, painter, points, step);
-    drawLines(painter, Qt::blue, savedPoints);
+    drawSupportLines(painter, points, step);
 }
 
 BezierCurve::~BezierCurve(){}
