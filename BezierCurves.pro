@@ -13,10 +13,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         application.cpp \
         beziercurve.cpp \
+        animator.cpp \
         canvas.cpp \
         main.cpp
 
 HEADERS += \
     application.h \
+    animator.h \
     beziercurve.h \
     canvas.h
