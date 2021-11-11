@@ -6,6 +6,9 @@
 #include <QVector>
 #include <algorithm>
 
+#include "curvedraw.h"
+#include "decasteljau.h"
+
 /*todo:
   split the drawing
   and calculating logic*/
@@ -16,13 +19,10 @@ class BezierCurve
 
 public:
     BezierCurve();
-    ~BezierCurve();
 
-    void drawLines(QPainter&, QColor);
-    void drawDots(QPainter&, QColor);
+    void drawCurve(QPainter&, QColor, QColor);
     void drawBezierCurve(QPainter&, QColor, qreal);
-    void drawStep(QPainter&, qreal, const QPointF&);
-    void drawSupportLines(QPainter&, qreal);
+    void animateAlgorithm(QPainter&, qreal, QPointF);
 
     void deleteLast();
     void deletePoint(QVector<QPointF>::iterator&);
@@ -33,7 +33,7 @@ public:
     bool empty();
     bool editPointIsEmpty();
 
-    void setOnEditPoint(const QVector<QPointF>::iterator&);
+    void setEditPoint(const QVector<QPointF>::iterator&);
 
     QVector<QPointF>::iterator checkClickToPoints(const QPointF&);
     QVector<QPointF>::iterator checkClickToLines(const QPointF&);
@@ -41,16 +41,7 @@ public:
     QVector<QPointF>::iterator end();
 
 private:
-    void calcBezierDot(QVector<QPointF>&, QVector<QPointF>, qreal);
-
-    void drawLines(QPainter&, QColor, const QVector<QPointF>&);
-
     bool checkClickToLine(const QPointF&, const QVector<QPointF>::iterator&);
-
-    void drawSupportLines(QPainter&, QVector<QPointF>, qreal);
-
-    QPointF moveFromTo(const QPointF&, const QPointF&, qreal);
-    qreal moveFromTo(qreal, qreal, qreal);
 };
 
 #endif // BEZIERCURVE_H

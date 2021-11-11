@@ -59,15 +59,10 @@ void Canvas::paintEvent(QPaintEvent* event)
         showInfo(painter);
     else
     {
-        curve->drawLines(painter, Qt::white);
-        curve->drawDots(painter, Qt::red);
+        curve->drawCurve(painter, Qt::red, Qt::white);
         curve->drawBezierCurve(painter, Qt::blue, 0.0025);
-
         if(animator->isActive())
-        {
-            curve->drawSupportLines(painter, animator->getCurrentStep());
-            curve->drawStep(painter, animator->getCurrentStep(), QPoint(width()/2, height()));
-        }
+            curve->animateAlgorithm(painter, animator->getCurrentStep(), QPoint(width()/2, height()));
     }
     painter.end();
 }
@@ -93,7 +88,7 @@ void Canvas::mousePressEvent(QMouseEvent* event)
         if(pointIt != curve -> end())
         {
             this->setCursor(QCursor(Qt::ClosedHandCursor));
-            curve->setOnEditPoint(pointIt);
+            curve->setEditPoint(pointIt);
         }
     }
 
@@ -124,7 +119,7 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
     Q_UNUSED(event)
 
     this->setCursor(QCursor(Qt::ArrowCursor));
-    curve->setOnEditPoint(curve -> end());
+    curve->setEditPoint(curve -> end());
 }
 void Canvas::keyPressEvent(QKeyEvent *event) {
 

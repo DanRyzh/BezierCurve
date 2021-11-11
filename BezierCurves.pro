@@ -15,10 +15,14 @@ SOURCES += \
         beziercurve.cpp \
         animator.cpp \
         canvas.cpp \
+        curvedraw.cpp \
+        decasteljau.cpp \
         main.cpp
 
 HEADERS += \
     application.h \
     animator.h \
     beziercurve.h \
-    canvas.h
+    canvas.h \
+    curvedraw.h \
+    decasteljau.h
