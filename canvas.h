@@ -13,8 +13,8 @@ class Canvas : public QWidget
 {
     Q_OBJECT
 
-    BezierCurve* curve;
-    Animator* animator;
+    QScopedPointer<BezierCurve> curve;
+    QScopedPointer<Animator> animator;
 
 public:
     Canvas(QWidget* parent = 0);
@@ -22,12 +22,12 @@ public:
 private:
     void showInfo(QPainter&);
 protected:
-    void paintEvent(QPaintEvent*);
-    void closeEvent(QCloseEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent*);
-    void mouseReleaseEvent(QMouseEvent*);
-    void keyPressEvent(QKeyEvent *);
+    void paintEvent(QPaintEvent*) override;
+    void closeEvent(QCloseEvent*) override;
+    void mousePressEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void keyPressEvent(QKeyEvent*) override;
 signals:
     void closing();
 };

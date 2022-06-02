@@ -11,7 +11,7 @@ QPointF moveFromTo(const QPointF&, const QPointF&, qreal);
 
 qreal moveFromTo(qreal, qreal, qreal);
 
-void drawBearingLines(QPainter& painter, QVector<QPointF> curve, qreal step);
+void drawBearingLines(QPainter&, QVector<QPointF>, qreal);
 
 void drawStep(QPainter&, qreal, const QPointF&);
 

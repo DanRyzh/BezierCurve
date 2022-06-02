@@ -7,11 +7,11 @@
 class Application : public QApplication
 {
     Q_OBJECT
-    Canvas* canvas;
+
+    QScopedPointer<Canvas> canvas;
 
 public:
     Application(int, char**);
-    ~Application();
 };
 
 #endif

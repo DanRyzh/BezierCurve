@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QPointer>
 
 class Animator : public QWidget
 {
@@ -10,9 +11,9 @@ class Animator : public QWidget
 
     qreal step = 0;
     qreal currentStep = 0;
-    QTimer* frameGenerator;
-    bool active;
-    bool paused;
+    QScopedPointer<QTimer> frameGenerator;
+    bool active = false;
+    bool paused = false;
 
 public:
     Animator(int = 25, qreal = 0.01);

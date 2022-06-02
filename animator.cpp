@@ -1,16 +1,11 @@
 #include "animator.h"
 
-Animator::Animator(int ms, qreal _step): step(_step)
+Animator::Animator(int ms, qreal _step): step(_step), frameGenerator(new QTimer)
 {
-    frameGenerator = new QTimer;
-
     frameGenerator->setTimerType(Qt::PreciseTimer);
     frameGenerator->setInterval(ms);
 
-    connect(frameGenerator, &QTimer::timeout, this, &Animator::drawFrame);
-
-    active = 0;
-    paused = 0;
+    connect(frameGenerator.data(), &QTimer::timeout, this, &Animator::drawFrame);
 };
 
 qreal Animator::getCurrentStep()
@@ -62,8 +57,7 @@ Animator::~Animator()
 {
     if (frameGenerator->isActive())
         frameGenerator->stop();
-    disconnect(frameGenerator, &QTimer::timeout, this, &Animator::drawFrame);
-    delete frameGenerator;
+    disconnect(frameGenerator.data(), &QTimer::timeout, this, &Animator::drawFrame);
 };
 
 

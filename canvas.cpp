@@ -1,15 +1,12 @@
 #include "canvas.h"
 
-Canvas::Canvas(QWidget* parent) : QWidget(parent)
+Canvas::Canvas(QWidget* parent) : QWidget(parent), curve(new BezierCurve), animator(new Animator)
 {
     setWindowTitle("Bezier curves");
     setStyleSheet("background-color: black");
     setFixedSize(1200, 600);
 
-    curve = new BezierCurve;
-    animator = new Animator();
-
-    connect(animator, &Animator::nextFrame, this, static_cast<void (QWidget::*)()>(&QWidget::update));
+    connect(animator.data(), &Animator::nextFrame, this, static_cast<void (QWidget::*)()>(&QWidget::update));
 }
 
 //Displaying user info
@@ -87,7 +84,7 @@ void Canvas::mousePressEvent(QMouseEvent* event)
 
         if(pointIt != curve -> end())
         {
-            this->setCursor(QCursor(Qt::ClosedHandCursor));
+            setCursor(QCursor(Qt::ClosedHandCursor));
             curve->setEditPoint(pointIt);
         }
     }
@@ -118,7 +115,7 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
 {
     Q_UNUSED(event)
 
-    this->setCursor(QCursor(Qt::ArrowCursor));
+    setCursor(QCursor(Qt::ArrowCursor));
     curve->setEditPoint(curve -> end());
 }
 void Canvas::keyPressEvent(QKeyEvent *event) {
@@ -135,7 +132,5 @@ Canvas::~Canvas()
 {
     if(animator->isActive())
         animator->stop();
-    disconnect(animator, &Animator::nextFrame, this, static_cast<void (QWidget::*)()>(&QWidget::update));
-    delete animator;
-    delete curve;
+    disconnect(animator.data(), &Animator::nextFrame, this, static_cast<void (QWidget::*)()>(&QWidget::update));
 }

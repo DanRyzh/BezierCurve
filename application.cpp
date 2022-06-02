@@ -1,11 +1,6 @@
 #include "application.h"
 
-Application::Application(int argc, char** argv) : QApplication(argc,argv)
+Application::Application(int argc, char** argv) : QApplication(argc,argv), canvas(new Canvas)
 {
-    canvas = new Canvas();
     canvas->show();
-}
-
-Application::~Application(){
-    delete canvas;
 }
