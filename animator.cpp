@@ -7,7 +7,7 @@ Animator::Animator(int ms, qreal _step): step(_step)
     frameGenerator->setTimerType(Qt::PreciseTimer);
     frameGenerator->setInterval(ms);
 
-    connect(frameGenerator,SIGNAL(timeout()),this, SLOT(drawFrame()));
+    connect(frameGenerator, &QTimer::timeout, this, &Animator::drawFrame);
 
     active = 0;
     paused = 0;
@@ -62,7 +62,7 @@ Animator::~Animator()
 {
     if (frameGenerator->isActive())
         frameGenerator->stop();
-    disconnect(frameGenerator,SIGNAL(timeout()),this, SLOT(drawFrame()));
+    disconnect(frameGenerator, &QTimer::timeout, this, &Animator::drawFrame);
     delete frameGenerator;
 };
 

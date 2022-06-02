@@ -9,7 +9,7 @@ Canvas::Canvas(QWidget* parent) : QWidget(parent)
     curve = new BezierCurve;
     animator = new Animator();
 
-    connect(animator, SIGNAL(nextFrame()), this, SLOT(update()));
+    connect(animator, &Animator::nextFrame, this, static_cast<void (QWidget::*)()>(&QWidget::update));
 }
 
 //Displaying user info
@@ -135,7 +135,7 @@ Canvas::~Canvas()
 {
     if(animator->isActive())
         animator->stop();
-    disconnect(animator, SIGNAL(nextFrame()), this, SLOT(update()));
+    disconnect(animator, &Animator::nextFrame, this, static_cast<void (QWidget::*)()>(&QWidget::update));
     delete animator;
     delete curve;
 }
